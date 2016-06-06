@@ -2,7 +2,7 @@
     "name": "vscode-select-line",
     "displayName": "Select Line",
     "description": "Expand selection to current line forward",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "publisher": "andreaskian",
     "engines": {
         "vscode": "^1.0.0"
