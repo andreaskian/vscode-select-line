@@ -16,33 +16,36 @@ export function activate(context: vscode.ExtensionContext) {
     // The commandId parameter must match the command field in package.json
     let disposable = vscode.commands.registerCommand('extension.selectLine', () => {
         // The code you place here will be executed every time your command is executed
-          let editor = vscode.window.activeTextEditor;
-          
-          if (!editor) { return; };
-          
-          let doc = editor.document
-          let sel = editor.selections
-          
-          editor.selections = sel.map(s => {
-              
-                let {line, character} = s.active;
-                
-                const numberOfCharactersOnFirstLine = doc.lineAt(s.start.line).range.end.character;
-                
-                if (numberOfCharactersOnFirstLine > 0) {                    
-                    return new vscode.Selection(
-                        new vscode.Position(line, 0),
-                        new vscode.Position(line, numberOfCharactersOnFirstLine)
-                    );
-                };
-                
-                return s;
-            })
-        
-    });
+        let editor = vscode.window.activeTextEditor;
+
+        if (!editor) { return; };
+
+        let doc = editor.document;
+        let sel = editor.selections;
+
+        editor.selections = sel.map(s => {
+
+          let firstSelection = new vscode.Position(s.start.line, 0);
+          let currentLine = s.active.line + 1;
+
+          if (doc.lineCount > currentLine) {
+            // expand selection to current line forward
+            return new vscode.Selection(
+              firstSelection,
+              new vscode.Position(currentLine, 0)
+            );
+          } else {
+            // expand selection to current line
+            return new vscode.Selection(
+              firstSelection,
+              new vscode.Position(s.active.line, doc.lineAt(s.active.line).range.end.character)
+            );
+          }
+        });
+      });
 
     context.subscriptions.push(disposable);
-}
+  }
 
 // this method is called when your extension is deactivated
 export function deactivate() {
